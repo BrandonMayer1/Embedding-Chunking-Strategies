@@ -1,0 +1,24 @@
+\# SmartInvoice API
+
+SmartInvoice is a backend service built with NestJS for managing,
+processing, and storing invoices securely. It supports PDF uploads,
+automatic parsing, vector storage in Qdrant, and AI-based searching.
+
+\-\--
+
+\## 📦 Features
+
+\- Upload and parse invoice PDFs - Chunk and vectorize content for
+semantic search - Store embeddings in Qdrant - Search invoices by
+keyword or context - RESTful API design with NestJS - File handling via
+Multer
+
+\-\--
+
+\## 🏗️ Project Structure
+
+\`\`\`bash src/ ├── app.controller.ts \# Root controller ├──
+app.service.ts \# Root service ├── main.ts \# Entry point ├── Embedding/
+│ ├── chunking.service.ts \# Handles text splitting and vectorization │
+└── qdrant.service.ts \# Qdrant DB communication ├── upload/ │ └──
+file-upload.service.ts \# File parsing and processing

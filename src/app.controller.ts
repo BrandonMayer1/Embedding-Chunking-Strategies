@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { FileUploadService } from './file-upload.service';
+import { memoryStorage } from 'multer';
 
 @Controller()
 export class AppController {
@@ -75,7 +76,7 @@ export class AppController {
           </form>
           <br />
           <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".pdf" required />
+            <input type="file" name="file" accept=".md" required />
             <button type="submit">Upload File</button>
           </form>
   
@@ -124,7 +125,7 @@ export class AppController {
   
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', {
-    dest: './uploads/',
+    storage: memoryStorage(),
     limits: {
       fileSize: 1024 * 1024 * 5 // 5MB limit
     }

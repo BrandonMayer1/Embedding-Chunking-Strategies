@@ -2,19 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { FileUploadService } from './file-upload.service';
+import { ChunkingService } from './Embedding/chunking.service';
 
 @Injectable()
 
 
 export class AppService {
-  constructor(private readonly httpService: HttpService, private readonly fileUploadService: FileUploadService) {}
+  constructor(private readonly httpService: HttpService, private readonly fileUploadService: FileUploadService, private readonly chunkingService: ChunkingService) {}
   private chatHistory: Array<{role: string, content: string}> = [];
 
   async startChat(message: string){
     console.log("RECIEVED MESSAGE: " + message);
 
     // Get relevant context from vector database
-    const context = await this.fileUploadService.queryWithMessage(message);
+    const context = await this.chunkingService.queryWithMessage(message);
     console.log("RETRIEVED CONTEXT: ", context);
 
     this.chatHistory.push({
