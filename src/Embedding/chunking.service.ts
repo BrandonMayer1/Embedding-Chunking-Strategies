@@ -54,24 +54,52 @@ export class ChunkingService {
                     },
                 ],
             });
-            console.log("STORED IN QUADRANT");
+            console.log("|--STORED IN QUADRANT--|");
         }
         catch (error){
             console.log(error);
         }
     }
 
-    //Method that turns the message into a vector then querys vector db
-    async queryWithMessage(message: string){
-        console.log("QUERYING WITH MESSAGE:", message);
-        //message -> vector
-        const vectorMessage = await this.toVector(message);
-        //query VectorDB
-        const result = await this.qdrant.search('markdown-store', {
-            vector: vectorMessage,
-            limit: 5, 
-            with_payload: true,
+ //--------------------------RETRIVAL-----------------------------------------
+    async queryWithMessage(message: string) {
+        console.log("|--QUERYING WITH MESSAGE:--|");
+        console.log(message);
+        console.log("|--------------------------|");
+
+        
+        // Find best document
+        const bestDocName = await this.findTopDocument(message);
+        console.log("|--BEST DOCUMENT: " + bestDocName + "--|");
+        
+        if (!bestDocName) {
+            console.log("No relevant documents");
+        }
+        else{
+            // Get the best chunks from document
+            const results = await this.qdrant.search('markdown-store', {
+                vector: await this.toVector(message),
+                filter: {
+                    must: [{ key: 'metadata', match: { value: bestDocName } }]
+                },
+                limit: 5,
+                with_payload: true
+            });
+        
+            return results.map(hit => hit.payload?.content).filter(Boolean).join('\n\n');
+        }
+        return "";
+    }
+    
+    // Finds the best document 
+    async findTopDocument(query: string) {
+        const vectorQuery = await this.toVector(query);
+        const results = await this.qdrant.search('markdown-store', {
+            vector: vectorQuery,
+            limit: 5,
+            with_payload: ['metadata']
         });
-        return result.map(hit => hit.payload?.text).filter(Boolean).join('\n\n');
+        if (!results?.length) return undefined;
+        return results.sort((a, b) => b.score - a.score)[0]?.payload?.metadata;
     }
 }

@@ -4,11 +4,11 @@ import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { FileUploadService } from './file-upload.service';
-import { memoryStorage } from 'multer';
+import { SupabaseService } from './Embedding/supabase.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly fileUploadService: FileUploadService) {}
+  constructor(private readonly appService: AppService, private readonly fileUploadService: FileUploadService, private readonly supabaseService: SupabaseService) {}
   private UserChats: string[] = [];
   private AiChats: string[] = [];
 
@@ -124,18 +124,24 @@ export class AppController {
 
   
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: memoryStorage(),
-    limits: {
-      fileSize: 1024 * 1024 * 5 // 5MB limit
-    }
-  }))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req: Request, @Res() res: Response) {
+    try{
+      const supabaseResult = await this.supabaseService.uploadFile("doc-storage", file);
+      console.log("-----------------UPLOADING FILE TO SUPABASE--------------------");
+    }
+    catch (error){
+      return error;
+    }
     if (!file) {
       return res.status(400).send('No file uploaded');
     }
     
-    await this.fileUploadService.handleFileUpload(file);
+    try {
+      await this.fileUploadService.handleFileUpload(file);
+    } catch (error) {
+      return res.status(500).send('Error processing file');
+    }
     res.redirect('/');
   }
 

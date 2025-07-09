@@ -15,7 +15,6 @@ export class FileUploadService {
         const documentName = file.originalname;
         const mDocs = await this.chunkingService.headerChunking(content);
         for (const doc of mDocs){
-          console.log(doc.pageContent);
           const vector = await this.chunkingService.toVector(doc.pageContent);
           await this.chunkingService.storeInQdrant(vector,doc.pageContent,documentName);
         }
