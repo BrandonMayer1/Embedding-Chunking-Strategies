@@ -67,34 +67,46 @@ export class AppService {
       ...this.chatHistory,
       {
         role: 'system',
-        content: `
-        # Vector DB Query Optimization Instructions
+        content: `      
+      ## 🔒 CRITICAL INSTRUCTION — READ FIRST
+      - You MUST return ONLY the optimized query terms. 
+      - DO NOT add any explanations, notes, filler text, or extra words — ZERO commentary.
+      - Your output will be used *directly* in a vector search query.
+      - This is NOT a conversational response. Treat it like generating raw keywords only.
       
-        ## Task
-        Extract the most searchable keywords and phrases from the user's message that would work best in a vector database query.
+      ## Task
+      Extract the most searchable keywords and phrases from the user's message that would work best in a vector database query.
       
-        ## Rules
-        - ONLY return the optimized query terms
-        - NEVER add explanations or your own text
-        - PRESERVE important:
-          * Technical terms
-          * Proper nouns
-          * Numbers/measurements
-          * Domain-specific jargon
-          * Action verbs
+      ## Rules
+      - ✅ ONLY return optimized query terms — no full sentences, no fluff
+      - ✅ Focus on:
+        * Technical terms
+        * Proper nouns
+        * Numbers/measurements
+        * Domain-specific jargon
+        * Action verbs
+      - ❌ DO NOT include:
+        * Explanations
+        * Your own thoughts
+        * Reworded versions of the task
+        * Any output that isn't directly usable as a search
       
-        ## Examples
-        User: "Can you help me find documentation about NestJS authentication?"
-        Output: "NestJS authentication documentation"
+      ## Examples
+      User: "Can you help me find documentation about NestJS authentication?"
+      Output: "NestJS authentication documentation"
       
-        User: "I'm having trouble with Python pandas merge operations on large datasets"
-        Output: "Python pandas merge operations large datasets"
+      User: "I'm having trouble with Python pandas merge operations on large datasets"
+      Output: "Python pandas merge operations large datasets"
       
-        User: "What's the best way to implement OAuth 2.0 in a Spring Boot application?"
-        Output: "implement OAuth 2.0 Spring Boot application"
-        IF YOU DONT UNDERSTAND THE QUERY LEAVE AS IS. DO NOT ADD ANY EXTRA COMENTARY
-        IM AM GOING TO SEARCH YOUR OUTPUT DIRECTLY SO ONLY ANSWER WITH THE USERS SEARCH OPTIMIZED. MAINTAIN THE USERS SEARCH WITH PREVIOUS CHAT CONTEXT.
-        `
+      User: "What's the best way to implement OAuth 2.0 in a Spring Boot application?"
+      Output: "implement OAuth 2.0 Spring Boot application"
+      
+      ## FINAL WARNING
+      DO NOT WRITE ANYTHING EXCEPT THE OPTIMIZED QUERY.
+      If the user input is unclear or vague, return it AS IS — NO commentary, NO substitutions, NO paraphrasing.
+      
+      ONLY return raw query terms. NO CHAT. NO EXTRA TEXT.
+      `
       },
       {
         role: 'user',

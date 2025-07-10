@@ -18,7 +18,7 @@ export class SupabaseService {
     }
 
     async uploadFile(bucket: string, file: Express.Multer.File) {
-        const newName = file.originalname + Date.now();
+        const newName = Date.now() + file.originalname;
         const { data, error } = await this.supabase.storage
         .from(bucket)
         .upload(`uploads/${newName}`, file.buffer, {
