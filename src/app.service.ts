@@ -24,11 +24,6 @@ export class AppService {
 
     // Get relevant context from vector database
     const context = await this.chunkingService.queryWithMessage(optimzedMessage);
-    console.log("|--RETRIEVED CONTEXT:--|");
-    console.log(context);
-    console.log("|----------------------|");
-
-
 
     const payload = {
       model: "deepseek-v2:latest",
@@ -97,6 +92,8 @@ export class AppService {
       
         User: "What's the best way to implement OAuth 2.0 in a Spring Boot application?"
         Output: "implement OAuth 2.0 Spring Boot application"
+        IF YOU DONT UNDERSTAND THE QUERY LEAVE AS IS. DO NOT ADD ANY EXTRA COMENTARY
+        IM AM GOING TO SEARCH YOUR OUTPUT DIRECTLY SO ONLY ANSWER WITH THE USERS SEARCH OPTIMIZED. MAINTAIN THE USERS SEARCH WITH PREVIOUS CHAT CONTEXT.
         `
       },
       {
