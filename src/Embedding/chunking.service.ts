@@ -32,12 +32,12 @@ export class ChunkingService {
         ];
 
         const len = text.length;
-        let chunkSize = 500;
+        let chunkSize = 250;
         if (len > 2500){
-            chunkSize = 450 + Math.floor((len - 2500) / 2500) * 200;
+            chunkSize = 250 + Math.floor((len - 2500) / 2500) * 200;
         }
-        if (chunkSize > 2000){
-            chunkSize = 2000;
+        if (chunkSize > 1000){
+            chunkSize = 1000;
         }
 
 
