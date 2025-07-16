@@ -28,11 +28,32 @@ export class AppService {
     const payload = {
       model: "deepseek-v2:latest",
       messages: [...this.chatHistory, 
-        {role: 'System',
-          content: `You are an AI assistant. Here are some RAG documents, if not related to the user message dont mention: "${context}"`
-        },
-      {role: 'user',
-        content: message,
+      {role: 'System',
+        content: `You are an AI assistant engaging in a conversation with a user. Your task is to respond to the user's message appropriately, using the provided context if relevant.
+
+        You have been provided with some additional context in the form of RAG (Retrieval-Augmented Generation) documents. This information may or may not be relevant to the user's message. Here is the context:
+        <context>
+        ${context}
+        </context>
+
+        The user's most recent message is:
+        <user_message>
+        ${message}
+        </user_message>
+
+        Please respond to the user's message, keeping the following guidelines in mind:
+        1. If the provided context is relevant to the user's message, use it to inform your response. However, do not explicitly mention or refer to the RAG documents or the fact that you're using additional context.
+        2. If the context is not relevant to the user's message, simply respond based on your general knowledge and the conversation history.
+        3. Maintain a helpful and friendly tone throughout your response.
+        4. Ensure your response is coherent with the previous conversation history.
+        5. If the user asks about something that isn't covered in the context or your general knowledge, it's okay to say you're not sure or don't have that information.
+
+        Format your response as follows:
+        <response>
+        [Your response to the user's message goes here]
+        </response>
+
+        Remember, your goal is to provide a natural, helpful response to the user without drawing attention to the behind-the-scenes context retrieval process.`
       }],
       stream: false,
     };
@@ -68,49 +89,41 @@ export class AppService {
       {
         role: 'system',
         content: `      
-      ## 🔒 CRITICAL INSTRUCTION — READ FIRST
-      - You MUST return ONLY the optimized query terms. 
-      - DO NOT add any explanations, notes, filler text, or extra words — ZERO commentary.
-      - Your output will be used *directly* in a vector search query.
-      - This is NOT a conversational response. Treat it like generating raw keywords only.
-      
-      ## Task
-      Extract the most searchable keywords and phrases from the user's message that would work best in a vector database query.
-      
-      ## Rules
-      - ✅ ONLY return optimized query terms — no full sentences, no fluff
-      - ✅ Focus on:
-        * Technical terms
-        * Proper nouns
-        * Numbers/measurements
-        * Domain-specific jargon
-        * Action verbs
-      - ❌ DO NOT include:
-        * Explanations
-        * Your own thoughts
-        * Reworded versions of the task
-        * Any output that isn't directly usable as a search
-      
-      ## Examples
-      User: "Can you help me find documentation about NestJS authentication?"
-      Output: "NestJS authentication documentation"
-      
-      User: "I'm having trouble with Python pandas merge operations on large datasets"
-      Output: "Python pandas merge operations large datasets"
-      
-      User: "What's the best way to implement OAuth 2.0 in a Spring Boot application?"
-      Output: "implement OAuth 2.0 Spring Boot application"
-      
-      ## FINAL WARNING
-      DO NOT WRITE ANYTHING EXCEPT THE OPTIMIZED QUERY.
-      If the user input is unclear or vague, return it AS IS — NO commentary, NO substitutions, NO paraphrasing.
-      
-      ONLY return raw query terms. NO CHAT. NO EXTRA TEXT.
-      `
+          You are tasked with extracting the most searchable keywords and phrases from a given message. This task is critical for optimizing vector database queries. Your output will be used directly in these queries, so precision and relevance are paramount.
+
+          Your task is to extract only the most relevant keywords and phrases from this message that would work best in a vector database query. Follow these rules strictly:
+
+          1. Return ONLY optimized query terms - no full sentences, no explanations, no filler text.
+          2. Focus on:
+            - Technical terms
+            - Proper nouns
+            - Numbers/measurements
+            - Domain-specific jargon
+            - Action verbs
+          3. DO NOT include:
+            - Explanations
+            - Your own thoughts
+            - Reworded versions of the task
+            - Any output that isn't directly usable as a search query
+
+          Examples of good outputs:
+          - For "Can you help me find documentation about NestJS authentication?":
+            NestJS authentication documentation
+          - For "I'm having trouble with Python pandas merge operations on large datasets":
+            Python pandas merge operations large datasets
+          - For "What's the best way to implement OAuth 2.0 in a Spring Boot application?":
+            implement OAuth 2.0 Spring Boot application
+
+          FINAL WARNINGS:
+          - DO NOT WRITE ANYTHING EXCEPT THE OPTIMIZED QUERY.
+          - If the input message is unclear or vague, return it AS IS - NO commentary, NO substitutions, NO paraphrasing.
+          - ONLY return raw query terms. NO CHAT. NO EXTRA TEXT.
+
+          Provide your output as a single line of text with no additional formatting or tags.`
       },
       {
         role: 'user',
-        content: message
+        content: "HERE IS THE MESSAGE TO PROCESS: " + message
       }
     ];
     
