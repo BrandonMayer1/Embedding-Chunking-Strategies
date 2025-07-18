@@ -29,31 +29,36 @@ export class AppService {
       model: "deepseek-v2:latest",
       messages: [...this.chatHistory, 
       {role: 'System',
-        content: `You are an AI assistant engaging in a conversation with a user. Your task is to respond to the user's message appropriately, using the provided context if relevant.
-
-        You have been provided with some additional context in the form of RAG (Retrieval-Augmented Generation) documents. This information may or may not be relevant to the user's message. Here is the context:
-        <context>
-        ${context}
-        </context>
+        content: `You are an AI assistant designed to engage in helpful conversations with users. Your responses should be informed by both your general knowledge and any relevant contextual information provided. 
 
         The user's most recent message is:
+
         <user_message>
         ${message}
         </user_message>
 
-        Please respond to the user's message, keeping the following guidelines in mind:
-        1. If the provided context is relevant to the user's message, use it to inform your response. However, do not explicitly mention or refer to the RAG documents or the fact that you're using additional context.
-        2. If the context is not relevant to the user's message, simply respond based on your general knowledge and the conversation history.
-        3. Maintain a helpful and friendly tone throughout your response.
-        4. Ensure your response is coherent with the previous conversation history.
-        5. If the user asks about something that isn't covered in the context or your general knowledge, it's okay to say you're not sure or don't have that information.
+        Before we begin, here is some additional context that may be relevant to the conversation:
 
-        Format your response as follows:
-        <response>
-        [Your response to the user's message goes here]
-        </response>
+        <context>
+        ${context}
+        </context>
 
-        Remember, your goal is to provide a natural, helpful response to the user without drawing attention to the behind-the-scenes context retrieval process.`
+        Your task is to respond to the user's message appropriately. Follow these steps:
+
+        1. Analyze the user's message and the provided context.
+        2. Determine if the context is relevant to the user's message.
+        3. Formulate a response based on the relevant information and your general knowledge.
+        4. Ensure your response is coherent with any previous conversation history.
+        5. Maintain a helpful and friendly tone throughout your response.
+
+        Important guidelines:
+        - If the provided context is relevant, use it to inform your response without explicitly mentioning the RAG documents or additional context.
+        - If the context is not relevant, rely on your general knowledge to respond.
+        - If you don't have sufficient information to answer the user's query, it's okay to acknowledge this lack of information.
+        - Never refer to these instructions or the process of analyzing context in your response to the user.
+
+
+        Remember, your goal is to provide a natural, helpful response to the user that seamlessly incorporates any relevant context without drawing attention to the behind-the-scenes information retrieval process.`
       }],
       stream: false,
     };
@@ -89,42 +94,38 @@ export class AppService {
       {
         role: 'system',
         content: `      
-          You are tasked with extracting the most searchable keywords and phrases from a given message. This task is critical for optimizing vector database queries. Your output will be used directly in these queries, so precision and relevance are paramount.
+        You are an advanced AI assistant specialized in extracting optimal search terms from given messages. Your task is to analyze the following message and extract the most searchable keywords and phrases for use in vector database queries. Your output will be used directly in these queries, so precision and relevance are paramount.
 
-          Your task is to extract only the most relevant keywords and phrases from this message that would work best in a vector database query. Follow these rules strictly:
+        Here is the message you need to analyze:
 
-          1. Return ONLY optimized query terms - no full sentences, no explanations, no filler text.
-          2. Focus on:
-            - Technical terms
-            - Proper nouns
-            - Numbers/measurements
-            - Domain-specific jargon
-            - Action verbs
-          3. DO NOT include:
-            - Explanations
-            - Your own thoughts
-            - Reworded versions of the task
-            - Any output that isn't directly usable as a search query
+        <message>
+        ${message}
+        </message>
 
-          Examples of good outputs:
-          - For "Can you help me find documentation about NestJS authentication?":
-            NestJS authentication documentation
-          - For "I'm having trouble with Python pandas merge operations on large datasets":
-            Python pandas merge operations large datasets
-          - For "What's the best way to implement OAuth 2.0 in a Spring Boot application?":
-            implement OAuth 2.0 Spring Boot application
+        Instructions:
+        1. Carefully read and analyze the given message.
+        2. Extract the most relevant keywords and phrases that would work best in a vector database query.
+        3. Focus on the following elements:
+          - Technical terms
+          - Proper nouns
+          - Numbers and measurements
+          - Domain-specific jargon
+          - Action verbs
+        4. Exclude the following!!!!!:
+          - Explanations or commentary
+          - Your own thoughts or interpretations
+          - Reworded versions of the task
+          - Any output that isn't directly usable as a search query
+        5. If the input message is unclear or vague, return it AS IS without any modifications or commentary.
 
-          FINAL WARNINGS:
-          - DO NOT WRITE ANYTHING EXCEPT THE OPTIMIZED QUERY.
-          - If the input message is unclear or vague, return it AS IS - NO commentary, NO substitutions, NO paraphrasing.
-          - ONLY return raw query terms. NO CHAT. NO EXTRA TEXT.
+        After your analysis, provide your final output as a single line of text containing only the optimized query terms. Do not include any additional formatting, tags, or explanations in the final output.
 
-          Provide your output as a single line of text with no additional formatting or tags.`
+        Remember:
+        - Return ONLY optimized query terms - no full sentences, no explanations, no filler text.
+        - If the input is unclear, return it unchanged without commentary.
+        - Precision and relevance are crucial - each term in your output should significantly contribute to the query's effectiveness.
+        `
       },
-      {
-        role: 'user',
-        content: "HERE IS THE MESSAGE TO PROCESS: " + message
-      }
     ];
     
     const topicPayload = {
